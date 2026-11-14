@@ -1,0 +1,128 @@
+{
+  "updated": "",
+  "week_of": "",
+  "note": "Only topics marked 'now' are shown in full. 'next' shows titles only. Links refreshed weekly by /coach-week from web search; every link has a source.",
+  "topics": [
+    {
+      "key": "two_pointers",
+      "skill": "dsa",
+      "title": "Two pointers",
+      "status": "now",
+      "why": "",
+      "links": [
+        {
+          "title": "Using the Two Pointer Technique",
+          "url": "https://algodaily.com/lessons/using-the-two-pointer-technique",
+          "kind": "read",
+          "minutes": 10,
+          "note": "Read first: both patterns, with pictures."
+        },
+        {
+          "title": "Two Pointer Technique in Java",
+          "url": "https://www.baeldung.com/java-two-pointer-technique",
+          "kind": "read",
+          "minutes": 8,
+          "note": "The same idea in Java."
+        },
+        {
+          "title": "Two Pointer Algorithm Explained",
+          "url": "https://medium.com/@kitanatoft/two-pointer-algorithm-explained-52fee6a2438a",
+          "kind": "read",
+          "minutes": 6,
+          "note": "Opposite ends vs same direction."
+        },
+        {
+          "title": "Java Character class tutorial",
+          "url": "https://docs.oracle.com/javase/tutorial/i18n/text/charintro.html",
+          "kind": "reference",
+          "minutes": 5,
+          "note": "isLetterOrDigit / toLowerCase for q2."
+        }
+      ]
+    },
+    {
+      "key": "system_design_basics",
+      "skill": "system_design",
+      "title": "System design: the interview round",
+      "status": "now",
+      "why": "",
+      "links": [
+        {
+          "title": "System Design in a Hurry (Hello Interview)",
+          "url": "https://www.hellointerview.com/learn/system-design/in-a-hurry",
+          "kind": "read",
+          "minutes": 30,
+          "note": "Free. This week: the introduction and the delivery framework only."
+        }
+      ]
+    },
+    {
+      "key": "dsa_patterns_map",
+      "skill": "dsa",
+      "title": "Map of DSA patterns",
+      "status": "next",
+      "why": "",
+      "links": [
+        {
+          "title": "20 DSA patterns (AlgoMaster)",
+          "url": "https://blog.algomaster.io/p/20-dsa-patterns",
+          "kind": "read",
+          "minutes": 15,
+          "note": ""
+        },
+        {
+          "title": "Top LeetCode patterns (DesignGurus)",
+          "url": "https://www.designgurus.io/blog/top-lc-patterns",
+          "kind": "read",
+          "minutes": 15,
+          "note": "How to spot which pattern a question needs."
+        }
+      ]
+    },
+    {
+      "key": "sliding_window",
+      "skill": "dsa",
+      "title": "Sliding window",
+      "status": "next",
+      "why": "",
+      "links": []
+    },
+    {
+      "key": "system_design_reference",
+      "skill": "system_design",
+      "title": "System design reference shelf",
+      "status": "next",
+      "why": "",
+      "links": [
+        {
+          "title": "Tech Interview Handbook: System design",
+          "url": "https://techinterviewhandbook.org/system-design/",
+          "kind": "read",
+          "minutes": 15,
+          "note": ""
+        },
+        {
+          "title": "System Design Primer (GitHub)",
+          "url": "https://github.com/donnemartin/system-design-primer",
+          "kind": "reference",
+          "minutes": 0,
+          "note": "Open source; includes Anki flashcards."
+        },
+        {
+          "title": "DesignGurus beginner guide",
+          "url": "https://designgurus.io/blog/system-design-interview-guide-for-beginners",
+          "kind": "read",
+          "minutes": 15,
+          "note": "Vendor blog; intro only."
+        },
+        {
+          "title": "ByteByteGo (Alex Xu)",
+          "url": "https://bytebytego.com/courses/system-design-interview/foreword",
+          "kind": "course",
+          "minutes": 0,
+          "note": "Mostly paid; optional."
+        }
+      ]
+    }
+  ]
+}

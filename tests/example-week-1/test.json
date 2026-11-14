@@ -1,0 +1,134 @@
+{
+  "id": "example-week-1",
+  "title": "Example weekly test",
+  "skill": "dsa",
+  "created": "",
+  "available_from": "2000-01-01",
+  "duration_min": 45,
+  "topics": [
+    "arrays",
+    "strings",
+    "two pointers"
+  ],
+  "rules": [
+    "No hints, no Study tab, no notes or web search.",
+    "The timer runs on the server and cannot be paused.",
+    "Coding questions open in Practice; submit each one there, then come back.",
+    "When time runs out your answers are submitted as they are."
+  ],
+  "theory": [
+    {
+      "id": "t1",
+      "type": "mcq",
+      "topic": "two pointers",
+      "prompt": "Sorted array, left pointer at the start, right pointer at the end, looking for a pair with sum = target. The current sum is LESS than target. What do you do?",
+      "options": [
+        "Move the right pointer left",
+        "Move the left pointer right",
+        "Move both pointers inward",
+        "Restart with left + 1"
+      ],
+      "answer": 1,
+      "explain": "The array is sorted, so moving left rightwards is the only move that can increase the sum. Moving right leftwards can only make it smaller."
+    },
+    {
+      "id": "t2",
+      "type": "mcq",
+      "topic": "two pointers",
+      "prompt": "The array is already sorted and has n elements. What is the time complexity of the two-pointer pair-sum search?",
+      "options": [
+        "O(n^2)",
+        "O(n log n)",
+        "O(n)",
+        "O(log n)"
+      ],
+      "answer": 2,
+      "explain": "Each step moves one pointer inward, so there are at most n-1 steps. (Sorting first would add O(n log n), but here the input is already sorted.)"
+    },
+    {
+      "id": "t3",
+      "type": "mcq",
+      "topic": "arrays",
+      "prompt": "In Java you add up 200,000 values, each up to 1,000,000,000, into an int sum. What goes wrong?",
+      "options": [
+        "Nothing, int holds it",
+        "The sum overflows; it should be a long",
+        "It throws an ArithmeticException",
+        "It becomes a double automatically"
+      ],
+      "answer": 1,
+      "explain": "int tops out near 2.1 billion. The total can reach 2 x 10^14, so int silently wraps around. Java does not throw on int overflow; use long."
+    },
+    {
+      "id": "t4",
+      "type": "mcq",
+      "topic": "arrays in place",
+      "prompt": "Move all zeros to the end, keeping the order of the other values, in place. Which approach is O(n) time and O(1) extra space?",
+      "options": [
+        "Sort the array in descending order",
+        "Copy non-zeros into a new array, then pad with zeros",
+        "A write pointer: copy each non-zero forward to the write position, then fill the rest with zeros",
+        "For each zero, bubble it to the end with swaps"
+      ],
+      "answer": 2,
+      "explain": "Sorting breaks the order, a new array uses O(n) space, and bubbling each zero is O(n^2). One read pass with a write pointer, then a fill, is O(n) with O(1) space."
+    },
+    {
+      "id": "t5",
+      "type": "mcq",
+      "topic": "two pointers",
+      "prompt": "Widest water tank (two lines, area = width x the shorter height). Why do you move the pointer at the SHORTER line?",
+      "options": [
+        "Because it is closer to the middle",
+        "Moving the taller line can never give a bigger area: the width shrinks and the height is still capped by the shorter line",
+        "To keep the loop O(n log n)",
+        "It does not matter which one you move"
+      ],
+      "answer": 1,
+      "explain": "Any pair that keeps the shorter line has smaller width and the same height cap, so it can't beat the current area. Dropping the shorter line is the only move that might find something better."
+    },
+    {
+      "id": "t6",
+      "type": "mcq",
+      "topic": "strings (Java)",
+      "prompt": "c is a Java char. Which expression gives its lowercase form for any letter?",
+      "options": [
+        "c.toLowerCase()",
+        "Character.toLowerCase(c)",
+        "(char)(c + 32)",
+        "String.lower(c)"
+      ],
+      "answer": 1,
+      "explain": "char is a primitive, so it has no methods (option 1 does not compile). c + 32 only works for A-Z and breaks for anything else. String.lower does not exist."
+    },
+    {
+      "id": "t7",
+      "type": "short",
+      "topic": "two pointers",
+      "prompt": "In 3-5 lines: when does the 'one pointer at each end' technique work, and when does it NOT? Give one example of each.",
+      "rubric": [
+        "Needs an order or property that tells you which pointer to move (e.g. a sorted array, or the shorter line in the water tank)",
+        "Each step throws away possibilities safely, so it is O(n)",
+        "Works: pair sum on a sorted array, palindrome check, reversing",
+        "Does not work: pair sum on an UNSORTED array (use a hash set or sort first)",
+        "Mentions the loop condition (left < right) or when to stop"
+      ],
+      "model": "It works when, at each step, the data tells you which side to move without missing an answer: on a sorted array, sum too small means move left, too big means move right. Palindromes and reversal work because you compare or swap mirror positions. It fails on an unsorted array for pair sum, because a too-small sum says nothing about which side to move; there you use a hash set (O(n) space) or sort first (O(n log n)). Loop while left < right."
+    },
+    {
+      "id": "t8",
+      "type": "short",
+      "topic": "two pointers",
+      "prompt": "Remove duplicates from a SORTED array in place and return the new length. Describe the read and write pointers, what is true about them at every step, and one edge case.",
+      "rubric": [
+        "Write pointer marks where the next unique value goes; read pointer scans every element",
+        "Invariant: a[0..write-1] holds the unique values seen so far, in order",
+        "Copy when a[read] != a[write-1] (or != the last kept value), then advance write",
+        "Returns write as the new length",
+        "Edge case: empty array (return 0), or all values equal (return 1)"
+      ],
+      "model": "Keep write = 1 (the first element is always kept) and scan read from 1 to n-1. If a[read] differs from a[write-1], copy it to a[write] and increase write. At every step a[0..write-1] is the unique prefix in sorted order. Return write. Edge cases: n = 0 returns 0 (guard before setting write = 1); all-equal input returns 1."
+    }
+  ],
+  "coding": []
+}

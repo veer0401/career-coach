@@ -1,0 +1,22 @@
+# Your personal progress stays out of git by default. Remove lines if you WANT to commit them (private fork only).
+__pycache__/
+*.pyc
+*.class
+data/*.jsonl
+data/chats.json
+data/sessions.json
+data/learn_progress.json
+data/test_runs.json
+data/goals.json
+data/plans.json
+data/ledger.json
+data/consequences.json
+data/weekly/
+data/market.md
+practice/*/q*.java
+practice/*/q*.py
+practice/*/q*.js
+practice/*/q*.md
+practice/*/attempts/
+scripts/backup.log
+.claude/settings.local.json

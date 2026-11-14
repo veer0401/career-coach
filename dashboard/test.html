@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weekly Tests</title>
+<script>
+  try { const t = localStorage.getItem('coach.theme'), p = localStorage.getItem('coach.palette'); if (t) document.documentElement.dataset.theme = t; if (p) document.documentElement.dataset.palette = p; } catch(e){}
+</script>
+<link rel="stylesheet" href="/theme.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.55}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:36px;padding:0 14px;border-radius:9px;font-size:14px;cursor:pointer;white-space:nowrap;text-decoration:none!important;font-family:inherit}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.icon{width:36px;padding:0}.btn svg{width:17px;height:17px}
+main{max-width:860px;margin:0 auto;padding:40px 16px 120px}
+.eyebrow{font:500 12px var(--mono);color:var(--faint);text-transform:uppercase;letter-spacing:.06em}
+h1{font-size:clamp(26px,3.4vw,34px);margin:6px 0 8px}
+h2{font-size:17px;margin:0}
+.sub,.meta{color:var(--muted)}
+.meta{font-size:13px}
+.trow{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 0;border-top:1px solid var(--line)}
+.trow:first-child{border-top:0}
+.trow .t{font-weight:600}
+.pill{font:12px var(--mono);color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:2px 9px;white-space:nowrap}
+.rules{margin:18px 0 24px;padding:16px 20px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.rules ul{margin:6px 0 0;padding-left:18px}
+.bar{position:sticky;top:var(--hdr,104px);z-index:4;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;margin-bottom:18px;background:var(--bg);border-bottom:1px solid var(--line)}
+.clock{font:600 22px var(--mono)}
+.clock.low{color:var(--bad)}
+.sec{margin-top:34px}
+.sec>.h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.q{padding:20px 0;border-top:1px solid var(--line)}
+.q .n{font:500 12px var(--mono);color:var(--faint)}
+.q .p{margin:4px 0 12px;white-space:pre-wrap}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;margin:6px 0;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--panel)}
+.opt:hover{background:var(--hover)}
+.opt input{margin-top:4px}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+textarea{width:100%;resize:vertical;font:14px/1.5 var(--sans);padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel);color:var(--ink)}
+.ans{white-space:pre-wrap;padding:10px 12px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line);font-size:14px}
+.lbl{font-size:12px;color:var(--faint);margin:10px 0 4px;text-transform:uppercase;letter-spacing:.05em}
+.explain{font-size:14px;color:var(--muted);margin-top:8px}
+.code{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.score{display:flex;gap:28px;flex-wrap:wrap;margin:20px 0;padding:18px 22px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.score .v{font:600 26px var(--mono)}
+.err{color:var(--bad);font-size:14px;min-height:1em}
+.blank{padding:40px 0;color:var(--muted)}
+@media (max-width:700px){.trow,.code{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header class="site" id="site"><div class="in">
+  <a class="brand" href="/#today"><i></i>Coach</a>
+  <nav class="snav" id="nav">
+    <a href="/#today" data-g="today" class="">Today</a>
+    <a href="/practice" data-g="practice" id="practiceLink" class=""><span class="dot"></span><span id="practiceTxt">Practice</span></a>
+    <a href="/#learn" data-g="learn" class="on">Learn</a>
+    <a href="/#progress" data-g="progress" class="">Progress</a>
+    <a href="/#coach" data-g="coach" class="">Coach</a>
+  </nav>
+  <div class="sright"><button class="btn icon ghost" id="themeBtn" title="Theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg></button></div>
+</div>
+<nav class="subnav" id="subnav"><a href="/#learn">Reading</a><a href="/test" class="on">Tests</a></nav>
+</header>
+<main id="main"><div class="blank">Loading…</div></main>
+
+<script>
+const TOKEN = '__CHAT_TOKEN__';
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDay = iso => iso ? new Date(iso.slice(0, 10) + 'T00:00').toLocaleDateString(undefined, {weekday: 'short', day: 'numeric', month: 'short'}) : '';
+async function get(u){ const r = await fetch(u); const j = await r.json(); if (!r.ok) throw new Error(j.error || r.status); return j; }
+async function post(body){
+  const r = await fetch('/api/test', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Chat-Token': TOKEN}, body: JSON.stringify(body)});
+  const j = await r.json().catch(() => ({error: 'server error'})); if (!r.ok) throw new Error(j.error || r.status); return j;
+}
+const testId = new URLSearchParams(location.search).get('id');
+let T = null, answers = {}, saveTimer = null, tick = null, deadlineAt = 0, submitting = false;
+
+// ---------- list ----------
+async function renderList(){
+  const ts = await get('/api/tests');
+  const label = {open: 'Start', running: 'Continue', done: 'Results', locked: 'Opens'};
+  $('main').innerHTML = `<div class="eyebrow">Weekly tests</div><h1>Test what stuck</h1>
+    <p class="sub">One timed test a week from what you practised. No hints, no Study tab, no pausing. It shows what you can still do days later.</p>
+    <div style="margin-top:24px">${ts.length ? ts.map(t => `<div class="trow"><div>
+      <div class="t">${esc(t.title)}</div>
+      <div class="meta">${t.duration_min} min · ${t.n_theory} theory · ${t.n_coding} coding${t.topics.length ? ' · ' + esc(t.topics.join(', ')) : ''}</div></div>
+      <div style="display:flex;gap:10px;align-items:center">${t.score ? `<span class="pill">${esc(t.score)}</span>` : ''}
+      ${t.status === 'locked' ? `<span class="pill">opens ${esc(fmtDay(t.available_from))}</span>` :
+        `<a class="btn ${t.status === 'done' ? '' : 'primary'}" href="/test?id=${encodeURIComponent(t.id)}">${label[t.status]}</a>`}</div></div>`).join('')
+      : '<div class="blank">No tests yet. The coach builds one at the end of each week from what you practised.</div>'}</div>`;
+}
+
+// ---------- one test ----------
+async function renderTest(){
+  T = await get('/api/test?id=' + encodeURIComponent(testId));
+  clearInterval(tick);
+  if (T.status === 'locked') return $('main').innerHTML = `<a href="/test">← All tests</a><h1>${esc(T.title)}</h1><p class="sub">Opens on ${esc(fmtDay(T.available_from))}.</p>`;
+  if (T.status === 'open') return renderIntro();
+  if (T.status === 'running') return renderRunning();
+  renderResult();
+}
+function renderIntro(){
+  const rules = T.rules && T.rules.length ? T.rules : ['No hints, no Study tab, no notes or web search.', 'The timer runs on the server and cannot be paused.', 'Coding questions open in Practice; submit each one there, then come back.', 'When time runs out your answers are submitted as they are.'];
+  $('main').innerHTML = `<a href="/test">← All tests</a><div class="eyebrow" style="margin-top:18px">${T.duration_min} minutes</div><h1>${esc(T.title)}</h1>
+    <p class="sub">${T.n_theory} theory question${T.n_theory === 1 ? '' : 's'} and ${T.n_coding} coding question${T.n_coding === 1 ? '' : 's'}${T.topics && T.topics.length ? ' on ' + esc(T.topics.join(', ')) : ''}.</p>
+    <div class="rules"><b>Rules</b><ul>${rules.map(r => `<li>${esc(r)}</li>`).join('')}</ul></div>
+    <button class="btn primary" id="startBtn">Start the test</button> <span class="err" id="err"></span>`;
+  $('startBtn').onclick = async () => { $('startBtn').disabled = true;
+    try { await post({action: 'start', id: testId}); renderTest(); } catch (e) { $('err').textContent = e.message; $('startBtn').disabled = false; } };
+}
+function answeredCount(){ return (T.theory || []).filter(q => (answers[q.id] || '').trim()).length; }
+function renderRunning(){
+  answers = Object.assign({}, T.answers || {});
+  deadlineAt = Date.now() + T.remaining_s * 1000;
+  const th = (T.theory || []).map((q, i) => `<div class="q" data-q="${esc(q.id)}"><div class="n">T${i + 1} · ${q.type === 'mcq' ? 'choose one' : 'short answer'}${q.topic ? ' · ' + esc(q.topic) : ''}</div>
+    <div class="p">${esc(q.prompt)}</div>
+    ${q.type === 'mcq' ? (q.options || []).map((o, k) => `<label class="opt"><input type="radio" name="${esc(q.id)}" value="${k}" ${String(answers[q.id]) === String(k) ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')
+      : `<textarea rows="4" data-id="${esc(q.id)}" placeholder="Your answer in a few lines">${esc(answers[q.id] || '')}</textarea>`}</div>`).join('');
+  const cd = (T.coding || []).map((c, i) => `<div class="code"><div><div class="n meta">C${i + 1}</div><b>${esc(c.title)}</b>
+      <div class="meta">${c.submitted ? `submitted · ${esc(c.result)} · tests ${esc(c.tests)}` : 'not submitted yet'}</div></div>
+    <a class="btn ${c.submitted ? '' : 'primary'}" target="_blank" href="/practice?set=${encodeURIComponent(c.set)}&q=${encodeURIComponent(c.q)}">${c.submitted ? 'View' : 'Open in Practice'}</a></div>`).join('');
+  $('main').innerHTML = `<div class="eyebrow">In progress</div><h1>${esc(T.title)}</h1>
+    <div class="bar"><span class="clock" id="clock">--:--</span><span class="meta" id="prog"></span>
+      <span><span class="meta" id="saved"></span> <button class="btn primary" id="submitBtn">Submit test</button></span></div>
+    <div class="err" id="err"></div>
+    ${th ? `<section class="sec"><div class="h"><h2>Theory</h2><span class="meta">answers save as you type</span></div>${th}</section>` : ''}
+    ${cd ? `<section class="sec"><div class="h"><h2>Coding</h2><button class="btn" id="refreshBtn">Refresh status</button></div>
+      <p class="meta">Each one opens in Practice in a new tab. Submit it there, then come back here.</p>${cd}</section>` : ''}`;
+  $('main').addEventListener('input', onInput); $('main').addEventListener('change', onInput);
+  $('submitBtn').onclick = () => submit(false);
+  if ($('refreshBtn')) $('refreshBtn').onclick = () => { flushSave().then(renderTest); };
+  updateProg(); clock(); tick = setInterval(clock, 1000);
+}
+function onInput(e){
+  const t = e.target;
+  if (t.type === 'radio') answers[t.name] = t.value;
+  else if (t.dataset && t.dataset.id) answers[t.dataset.id] = t.value;
+  else return;
+  updateProg(); $('saved').textContent = '';
+  clearTimeout(saveTimer); saveTimer = setTimeout(flushSave, 800);
+}
+async function flushSave(){
+  clearTimeout(saveTimer);
+  try { await post({action: 'save', id: testId, answers}); if ($('saved')) $('saved').textContent = 'saved'; } catch (e) { if ($('err')) $('err').textContent = e.message; }
+}
+function updateProg(){ if ($('prog')) $('prog').textContent = `${answeredCount()}/${(T.theory || []).length} theory answered`; }
+function clock(){
+  const left = Math.max(0, Math.round((deadlineAt - Date.now()) / 1000));
+  const el = $('clock'); if (!el) return;
+  el.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0');
+  el.classList.toggle('low', left <= 300);
+  if (left === 0) submit(true);
+}
+async function submit(auto){
+  if (submitting) return;
+  const blank = (T.theory || []).length - answeredCount();
+  if (!auto && blank && !confirmInline(blank)) return;
+  submitting = true; clearInterval(tick);
+  try { await post({action: 'submit', id: testId, answers}); await renderTest(); }
+  catch (e) { $('err').textContent = e.message; submitting = false; }
+}
+let armed = false;
+function confirmInline(blank){
+  if (armed) return true;
+  armed = true; $('submitBtn').textContent = `${blank} unanswered. Submit anyway?`;
+  setTimeout(() => { armed = false; if ($('submitBtn')) $('submitBtn').textContent = 'Submit test'; }, 4000);
+  return false;
+}
+function renderResult(){
+  const r = T.result || {}, rv = T.review || {};
+  const th = (T.theory || []).map((q, i) => {
+    const mine = (T.answers || {})[q.id];
+    if (q.type === 'mcq') {
+      const opts = (q.options || []).map((o, k) => { const right = String(k) === String(q.answer), picked = String(k) === String(mine);
+        return `<div class="opt ${right ? 'right' : picked ? 'wrong' : ''}"><span>${right ? '✓' : picked ? '✗' : '·'}</span><span>${esc(o)}</span></div>`; }).join('');
+      const ok = String(mine) === String(q.answer);
+      return `<div class="q"><div class="n">T${i + 1} · ${ok ? 'correct' : mine == null || mine === '' ? 'not answered' : 'wrong'}</div><div class="p">${esc(q.prompt)}</div>${opts}
+        ${q.explain ? `<div class="explain">${esc(q.explain)}</div>` : ''}</div>`;
+    }
+    const g = rv[q.id];
+    return `<div class="q"><div class="n">T${i + 1} · written · ${g ? `coach score ${g.score}/1` : 'awaiting coach review'}</div><div class="p">${esc(q.prompt)}</div>
+      <div class="lbl">Your answer</div><div class="ans">${esc(mine || '(blank)')}</div>
+      ${g && g.comment ? `<div class="lbl">Coach</div><div class="ans">${esc(g.comment)}</div>` : ''}
+      ${q.rubric && q.rubric.length ? `<div class="lbl">A strong answer covers</div><ul class="explain">${q.rubric.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}
+      ${q.model ? `<details><summary class="meta">Model answer</summary><div class="ans" style="margin-top:6px">${esc(q.model)}</div></details>` : ''}</div>`;
+  }).join('');
+  const cd = (T.coding || []).map((c, i) => `<div class="code"><div><span class="meta">C${i + 1}</span> <b>${esc(c.title)}</b>
+    <div class="meta">${c.submitted ? `${esc(c.result)} · tests ${esc(c.tests)} · ${c.minutes} min${c.in_window ? '' : ' · outside the test window'}` : 'not submitted'}</div></div>
+    <a class="btn" href="/practice?set=${encodeURIComponent(c.set)}&q=${encodeURIComponent(c.q)}">Open</a></div>`).join('');
+  $('main').innerHTML = `<a href="/test">← All tests</a><div class="eyebrow" style="margin-top:18px">Submitted ${esc(fmtDay(T.submitted))}${T.late ? ' · after time' : ''}</div><h1>${esc(T.title)}</h1>
+    <div class="score"><div><div class="meta">Multiple choice</div><div class="v">${r.mcq_right ?? 0}/${r.mcq_total ?? 0}</div></div>
+      ${r.short_total ? `<div><div class="meta">Written</div><div class="v">${r.short_score != null ? r.short_score + '/' + r.short_total : '…'}</div>${r.short_score == null ? '<div class="meta">tell the coach "grade my test"</div>' : ''}</div>` : ''}
+      ${(T.coding || []).length ? `<div><div class="meta">Coding solved</div><div class="v">${T.coding.filter(c => c.result === 'solved').length}/${T.coding.length}</div></div>` : ''}</div>
+    ${th ? `<section class="sec"><div class="h"><h2>Theory</h2></div>${th}</section>` : ''}
+    ${cd ? `<section class="sec"><div class="h"><h2>Coding</h2></div>${cd}</section>` : ''}`;
+}
+window.addEventListener('pagehide', () => {
+  if (!T || T.status !== 'running' || submitting) return;
+  fetch('/api/test', {method: 'POST', keepalive: true, headers: {'Content-Type': 'application/json', 'X-Chat-Token': TOKEN}, body: JSON.stringify({action: 'save', id: testId, answers})});
+});
+const setHdr = () => document.documentElement.style.setProperty('--hdr', $('site').offsetHeight + 'px');
+setHdr(); addEventListener('resize', setHdr);
+(testId ? renderTest() : renderList()).catch(e => { $('main').innerHTML = `<a href="/test">← All tests</a><p class="err">${esc(e.message)}</p>`; });
+</script>
+<script src="/theme.js"></script>
+</body>
+</html>

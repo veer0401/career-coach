@@ -1,0 +1,13 @@
+{
+  "name": "",
+  "goal": "Describe your goal, e.g. an SDE-2 offer at a product company",
+  "goal_date": "2027-06-30",
+  "min_minutes": 20,
+  "comeback_minutes": 10,
+  "weekly_target_days": 5,
+  "capacity_minutes": {
+    "weekday": 60,
+    "weekend": 180
+  },
+  "notes": "Anything the coach should know about your schedule. Counted day = at least min_minutes logged."
+}
