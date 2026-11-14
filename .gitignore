@@ -18,5 +18,6 @@ practice/*/q*.py
 practice/*/q*.js
 practice/*/q*.md
 practice/*/attempts/
+!practice/example-*/q*.java
 scripts/backup.log
 .claude/settings.local.json
